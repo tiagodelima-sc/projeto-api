@@ -2,6 +2,7 @@ package com.example.projeto_api.views
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,8 +11,12 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -30,6 +35,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.projeto_api.R
@@ -40,15 +46,17 @@ private const val BASE_URL = "https://digimon-api.vercel.app"
 
 @Composable
 fun DigimonListScreen(
+    navController: NavController,
     digimonViewModel: DigimonViewModel
 ) {
     val digimonsList by digimonViewModel.digimons.observeAsState(listOf())
-    DigimonList(digimonList = digimonsList)
+    DigimonList(navController = navController, digimonList = digimonsList)
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DigimonList(
+    navController: NavController,
     digimonList: List<Digimon>
 ) {
     LazyVerticalGrid(
@@ -56,14 +64,18 @@ fun DigimonList(
         cells = GridCells.Fixed(2)
     ) {
         items(digimonList) { digimon ->
-            DigimonEntry(digimon = digimon)
+            DigimonEntry(digimon = digimon, view = {
+                navController.navigate("digimon?name=${digimon.name}")
+            })
         }
     }
 }
 
 @Composable
 fun DigimonEntry(
-    digimon: Digimon
+    digimon: Digimon,
+    view: () -> Unit
+
 ) {
     val density = LocalDensity.current.density
     val width = remember { mutableStateOf(0F) }
@@ -82,6 +94,9 @@ fun DigimonEntry(
                 contentDescription = digimon.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
+                    .clickable {
+                        view()
+                    }
                     .fillMaxWidth()
                     .clip(RectangleShape)
                     .onGloballyPositioned {
@@ -103,6 +118,9 @@ fun DigimonEntry(
             Text(
                 text = digimon.name,
                 modifier = Modifier
+                    .clickable {
+                        view()
+                    }
                     .align(Alignment.BottomCenter),
                 style = MaterialTheme.typography.h5.copy(
                     color = Color.White, fontWeight = FontWeight.Bold
@@ -111,3 +129,4 @@ fun DigimonEntry(
         }
     }
 }
+

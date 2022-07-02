@@ -7,18 +7,19 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.projeto_api.ui.theme.ProjetoapiTheme
-import com.example.projeto_api.views.CharacterListScreen
-import com.example.projeto_api.views.CharacterViewModel
+import com.example.projeto_api.views.DigimonListScreen
+import com.example.projeto_api.views.DigimonVMFactory
+import com.example.projeto_api.views.DigimonViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewModel by viewModels<CharacterViewModel>()
+        val viewModel by viewModels<DigimonViewModel>() {
+            DigimonVMFactory((this.applicationContext as DigimonsApplication).repository)
+        }
         setContent {
             ProjetoapiTheme {
                 // A surface container using the 'background' color from the theme
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    FinalSpaceCharacter(viewModel)
+                    DigimonsCharacters(viewModel)
                 }
             }
         }
@@ -34,9 +35,9 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun FinalSpaceCharacter(
-    viewModel: CharacterViewModel
+fun DigimonsCharacters(
+    viewModel: DigimonViewModel
 ) {
-    CharacterListScreen(characterViewModel = viewModel)
+    DigimonListScreen(digimonViewModel = viewModel)
 }
 

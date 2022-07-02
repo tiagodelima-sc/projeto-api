@@ -1,4 +1,4 @@
-package com.example.projeto_api.data
+package com.example.projeto_api.data.domain
 
 data class Digimon(
     val img: String,

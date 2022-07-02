@@ -1,32 +1,43 @@
 package com.example.projeto_api.views
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.example.projeto_api.data.domain.Digimon
+import com.example.projeto_api.data.repository.DigimonRepository
 import com.example.projeto_api.network.OpenDigimonApi
 import kotlinx.coroutines.launch
+import java.io.IOException
 
-class CharacterViewModel : ViewModel() {
-
-    private val _characterList = MutableLiveData<List<Character>?>()
-    val characterList: MutableLiveData<List<Character>?>
-        get() = _characterList
+class DigimonViewModel(private val repository: DigimonRepository) : ViewModel() {
 
     init {
-        getCharacter()
+        if(repository.digimons.value.isNullOrEmpty()){
+            refreshDataFromRepository()
+        }
     }
 
+    val digimons = repository.digimons
 
-    private fun getCharacter(){
+    private val _eventNetworkError = MutableLiveData<String>("")
+
+    private fun refreshDataFromRepository(){
         viewModelScope.launch {
             try {
-                val listResult = OpenDigimonApi.retrofitService.getAuthor()
-                _characterList.value = listResult
-            } catch (e: Exception){
-                _characterList.value = null
-                Log.d("GetCharacter"," ${e.message}")
+                repository.refreshDigimons()
+                _eventNetworkError.value = ""
+            } catch (networkError: IOException){
+                Log.d("Error", "networkError.message")
+                _eventNetworkError.value = networkError.message
             }
         }
+    }
+
+}
+
+class DigimonVMFactory(private val repository: DigimonRepository) : ViewModelProvider.Factory{
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if(modelClass.isAssignableFrom(DigimonViewModel::class.java))
+            return DigimonViewModel(repository) as T
+        throw IllegalAccessException("Unknown ViewModel Class")
     }
 }

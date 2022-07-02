@@ -1,4 +1,5 @@
 package com.example.projeto_api.views
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -32,38 +33,40 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.projeto_api.R
+import com.example.projeto_api.data.domain.Digimon
 
+//endereço img
 private const val BASE_URL = "https://digimon-api.vercel.app"
 
 @Composable
-fun CharacterListScreen(
-    characterViewModel: CharacterViewModel
+fun DigimonListScreen(
+    digimonViewModel: DigimonViewModel
 ) {
-    val characterList by characterViewModel.characterList.observeAsState(listOf())
-    characterList?.let { CharacterList(characterList = it) }
+    val digimonsList by digimonViewModel.digimons.observeAsState(listOf())
+    DigimonList(digimonList = digimonsList)
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CharacterList(
-    characterList: List<Character>
+fun DigimonList(
+    digimonList: List<Digimon>
 ) {
     LazyVerticalGrid(
         modifier = Modifier.background(Color.LightGray),
         cells = GridCells.Fixed(2)
     ) {
-        items(characterList) { character ->
-            CharacterEntry(character = character)
+        items(digimonList) { digimon ->
+            DigimonEntry(digimon = digimon)
         }
     }
 }
 
 @Composable
-fun CharacterEntry(
-    character: Character
+fun DigimonEntry(
+    digimon: Digimon
 ) {
     val density = LocalDensity.current.density
-    val width = remember {  mutableStateOf(0F) }
+    val width = remember { mutableStateOf(0F) }
     val height = remember { mutableStateOf(0F) }
     Card(
         modifier = Modifier.padding(6.dp),
@@ -72,41 +75,39 @@ fun CharacterEntry(
         Box() {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(BASE_URL + character.img)
+                    .data(digimon.img)
                     .crossfade(true)
                     .build(),
                 placeholder = painterResource(R.drawable.placeholder),
-                contentDescription = character.name,
+                contentDescription = digimon.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RectangleShape)
                     .onGloballyPositioned {
-                        width.value = it.size.width/density
-                        height.value = it.size.height/density
+                        width.value = it.size.width / density
+                        height.value = it.size.height / density
                     }
             )
-            Box(modifier = Modifier
-                .size(width.value.dp, height.value.dp)
-                .background(
-                    Brush.verticalGradient(
-                        listOf(Color.Transparent, Color.Black),
-                        100F,
-                        500F
+            Box(
+                modifier = Modifier
+                    .size(width.value.dp, height.value.dp)
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(Color.Transparent, Color.Black),
+                            100F,
+                            500F
+                        )
                     )
+            )
+            Text(
+                text = digimon.name,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter),
+                style = MaterialTheme.typography.h5.copy(
+                    color = Color.White, fontWeight = FontWeight.Bold
                 )
             )
-            character.name?.let {
-                Text(
-                    text = it,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter),
-                    style = MaterialTheme.typography.h5.copy(
-                        color = Color.White, fontWeight = FontWeight.Bold
-                    )
-                )
-            }
-
         }
     }
 }

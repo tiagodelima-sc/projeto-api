@@ -32,16 +32,15 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.projeto_api.R
-import com.example.projeto_api.data.Character
 
-private const val BASE_URL = "https://finalspaceapi.com"
+private const val BASE_URL = "https://digimon-api.vercel.app"
 
 @Composable
 fun CharacterListScreen(
     characterViewModel: CharacterViewModel
 ) {
     val characterList by characterViewModel.characterList.observeAsState(listOf())
-    CharacterList(characterList = characterList)
+    characterList?.let { CharacterList(characterList = it) }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -73,7 +72,7 @@ fun CharacterEntry(
         Box() {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(BASE_URL + character.img_url)
+                    .data(BASE_URL + character.img)
                     .crossfade(true)
                     .build(),
                 placeholder = painterResource(R.drawable.placeholder),

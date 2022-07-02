@@ -7,7 +7,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 
-private const val BASE_URL = "https://finalspaceapi.com/"
+private const val BASE_URL = "https://digimon-api.vercel.app"
 
 
 private val moshi = Moshi.Builder()
@@ -21,7 +21,7 @@ private val retrofit = Retrofit.Builder()
 
 
 interface OpenFinalSpaceApiService{
-    @GET("api/v0/character")
+    @GET("api/digimon")
     suspend fun getAuthor(): List<Character>
 }
 
